@@ -16,6 +16,7 @@ package com.facebook.presto.hive.metastore;
 import com.facebook.presto.hive.TableAlreadyExistsException;
 import com.facebook.presto.spi.SchemaTableName;
 import com.facebook.presto.spi.TableNotFoundException;
+import com.facebook.presto.spi.security.Identity;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -381,6 +382,17 @@ public class InMemoryHiveMetastore
     @Override
     public void flushCache()
     {
+    }
+
+    @Override
+    public void grantTablePrivileges(String databaseName, String tableName, Identity identity, Set<PrivilegeGrantInfo> privilegeGrantInfoSet)
+    {
+        Set<HivePrivilege> hivePrivileges = privilegeGrantInfoSet.stream()
+                .map(HivePrivilege::parsePrivilege)
+                .flatMap(Collection::stream)
+                .collect(toImmutableSet());
+
+        setTablePrivileges(identity.getUser(), PrincipalType.USER, databaseName, tableName, hivePrivileges);
     }
 
     private static boolean isParentDir(File directory, File baseDirectory)

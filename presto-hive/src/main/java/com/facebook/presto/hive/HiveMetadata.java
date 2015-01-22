@@ -35,6 +35,9 @@ import com.facebook.presto.spi.TableNotFoundException;
 import com.facebook.presto.spi.ViewNotFoundException;
 import com.facebook.presto.spi.predicate.NullableValue;
 import com.facebook.presto.spi.predicate.TupleDomain;
+import com.facebook.presto.spi.security.Identity;
+import com.facebook.presto.spi.security.Privilege;
+import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.TypeManager;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -1257,6 +1260,26 @@ public class HiveMetadata
             predicate = TupleDomain.columnWiseUnion(partitionDomains);
         }
         return new ConnectorTableLayout(hiveLayoutHandle, Optional.empty(), predicate, Optional.empty(), Optional.of(partitionDomains), ImmutableList.of());
+    }
+
+    @Override
+    public void grantTablePrivileges(ConnectorSession session, SchemaTableName schemaTableName, Set<Privilege> privileges, Identity identity, boolean grantOption)
+    {
+        String schemaName = schemaTableName.getSchemaName();
+
+        String tableName = schemaTableName.getTableName();
+
+        // TODO: perform sanity checks before calling grant_privileges()
+        // - check that the user/role exists in the hive metastore. If not, throw NotFoundException
+        // - check whether the user already has the given privilege. If yes, there is nothing more to do, so return.
+
+        Set<PrivilegeGrantInfo> privilegeGrantInfoSet = privileges.stream()
+                .map(privilege1 -> {
+                    return new PrivilegeGrantInfo(privilege1.name().toLowerCase(), 0, session.getUser(), PrincipalType.USER, grantOption);
+                })
+                .collect(Collectors.toSet());
+
+        metastore.grantTablePrivileges(schemaName, tableName, identity, privilegeGrantInfoSet);
     }
 
     @Override
