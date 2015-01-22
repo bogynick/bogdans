@@ -93,6 +93,11 @@ public class AllowAllAccessControl
     }
 
     @Override
+    public void checkCanGrantTablePrivilege(Identity identity, QualifiedTableName tableName)
+    {
+    }
+
+    @Override
     public void checkCanSetSystemSessionProperty(Identity identity, String propertyName)
     {
     }

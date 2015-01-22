@@ -25,6 +25,7 @@ import static com.facebook.presto.spi.security.AccessDeniedException.denyCreateV
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDeleteTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDropTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDropView;
+import static com.facebook.presto.spi.security.AccessDeniedException.denyGrantTablePrivilege;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyInsertTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyRenameColumn;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyRenameTable;
@@ -119,6 +120,12 @@ public class DenyAllAccessControl
     public void checkCanCreateViewWithSelectFromView(TransactionId transactionId, Identity identity, QualifiedObjectName viewName)
     {
         denySelectView(viewName.toString());
+    }
+
+    @Override
+    public void checkCanGrantTablePrivilege(Identity identity, QualifiedTableName tableName)
+    {
+        denyGrantTablePrivilege(tableName.toString());
     }
 
     @Override

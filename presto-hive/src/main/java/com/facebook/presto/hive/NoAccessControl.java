@@ -118,4 +118,9 @@ public class NoAccessControl
     public void checkCanSetCatalogSessionProperty(Identity identity, String propertyName)
     {
     }
+
+    @Override
+    public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
+    {
+    }
 }

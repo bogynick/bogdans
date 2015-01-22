@@ -106,6 +106,12 @@ public interface AccessControl
     void checkCanCreateViewWithSelectFromView(TransactionId transactionId, Identity identity, QualifiedObjectName viewName);
 
     /**
+     * Check if identity is allowed to grant a privilege on the specified table.
+     * @throws com.facebook.presto.spi.security.AccessDeniedException if not allowed
+     */
+    void checkCanGrantTablePrivilege(Identity identity, QualifiedTableName tableName);
+
+    /**
      * Check if identity is allowed to set the specified system property.
      * @throws com.facebook.presto.spi.security.AccessDeniedException if not allowed
      */

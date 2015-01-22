@@ -47,6 +47,9 @@ statement
     | CREATE (OR REPLACE)? VIEW qualifiedName AS query                 #createView
     | DROP VIEW (IF EXISTS)? qualifiedName                             #dropView
     | CALL qualifiedName '(' (callArgument (',' callArgument)*)? ')'   #call
+    | GRANT (privilege (',' privilege)* | ALL PRIVILEGES)
+        ON (TABLE)? qualifiedName TO (identity | PUBLIC)
+        (WITH GRANT OPTION)?                                           #grant
     | EXPLAIN ('(' explainOption (',' explainOption)* ')')? statement  #explain
     | SHOW TABLES ((FROM | IN) qualifiedName)? (LIKE pattern=STRING)?  #showTables
     | SHOW SCHEMAS ((FROM | IN) identifier)?                           #showSchemas
@@ -359,6 +362,13 @@ levelOfIsolation
 callArgument
     : expression                    #positionalArgument
     | identifier '=>' expression    #namedArgument
+
+privilege
+    : value=(SELECT | DELETE | INSERT | UPDATE)     #privilegeNode
+    ;
+
+identity
+    : name=qualifiedName                    #identityNode
     ;
 
 qualifiedName
@@ -501,6 +511,11 @@ DELETE: 'DELETE';
 INTO: 'INTO';
 CONSTRAINT: 'CONSTRAINT';
 DESCRIBE: 'DESCRIBE';
+GRANT: 'GRANT';
+UPDATE: 'UPDATE';
+PRIVILEGES: 'PRIVILEGES';
+PUBLIC: 'PUBLIC';
+OPTION: 'OPTION';
 EXPLAIN: 'EXPLAIN';
 FORMAT: 'FORMAT';
 TYPE: 'TYPE';

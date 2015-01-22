@@ -32,6 +32,7 @@ import com.facebook.presto.sql.tree.ExplainFormat;
 import com.facebook.presto.sql.tree.ExplainOption;
 import com.facebook.presto.sql.tree.ExplainType;
 import com.facebook.presto.sql.tree.Expression;
+import com.facebook.presto.sql.tree.Grant;
 import com.facebook.presto.sql.tree.Insert;
 import com.facebook.presto.sql.tree.Intersect;
 import com.facebook.presto.sql.tree.Isolation;
@@ -41,6 +42,7 @@ import com.facebook.presto.sql.tree.JoinOn;
 import com.facebook.presto.sql.tree.JoinUsing;
 import com.facebook.presto.sql.tree.NaturalJoin;
 import com.facebook.presto.sql.tree.Node;
+import com.facebook.presto.sql.tree.PrivilegeNode;
 import com.facebook.presto.sql.tree.Query;
 import com.facebook.presto.sql.tree.QuerySpecification;
 import com.facebook.presto.sql.tree.Relation;
@@ -819,6 +821,30 @@ public final class SqlFormatter
             builder.append("ROLLBACK");
             return null;
         }
+
+        public Void visitGrant(Grant node, Integer indent)
+        {
+            builder.append("GRANT ");
+
+            int size = node.getPrivilegeNodes().size();
+
+            for (PrivilegeNode privilegeNode : node.getPrivilegeNodes()) {
+                builder.append(privilegeNode.getPrivilege().name());
+                size -= 1;
+                if (size > 0) {
+                    builder.append(", ");
+                }
+            }
+            builder.append(" ON ");
+            if (node.isTable()) {
+                builder.append("TABLE ");
+            }
+            builder.append(node.getTableName())
+                    .append(" TO ")
+                    .append(node.getIdentityNode().getIdentity().getUser());
+            if (node.isOption()) {
+                builder.append(" WITH GRANT OPTION");
+            }
 
         private void processRelation(Relation relation, Integer indent)
         {

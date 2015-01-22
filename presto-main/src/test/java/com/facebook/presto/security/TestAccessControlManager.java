@@ -276,5 +276,11 @@ public class TestAccessControlManager
         {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 }

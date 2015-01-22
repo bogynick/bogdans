@@ -35,6 +35,7 @@ import static com.facebook.presto.spi.security.AccessDeniedException.denyCreateV
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDeleteTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDropTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyDropView;
+import static com.facebook.presto.spi.security.AccessDeniedException.denyGrantTablePrivilege;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyInsertTable;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyRenameColumn;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyRenameTable;
@@ -174,6 +175,14 @@ public class SqlStandardAccessControl
     {
         if (!metastore.getRoles(identity.getUser()).contains(ADMIN_ROLE_NAME)) {
             denySetCatalogSessionProperty(connectorId, propertyName);
+        }
+    }
+
+    @Override
+    public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
+    {
+        if (!checkTablePermission(identity, tableName, GRANT)) {
+            denyGrantTablePrivilege(tableName.toString());
         }
     }
 

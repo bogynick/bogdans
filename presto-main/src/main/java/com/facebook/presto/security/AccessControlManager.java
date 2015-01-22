@@ -314,6 +314,18 @@ public class AccessControlManager
     }
 
     @Override
+    public void checkCanGrantTablePrivilege(Identity identity, QualifiedTableName tableName)
+    {
+        requireNonNull(identity, "identity is null");
+        requireNonNull(tableName, "tableName is null");
+
+        ConnectorAccessControl accessControl = catalogAccessControl.get(tableName.getCatalogName());
+        if (accessControl != null) {
+            accessControl.checkCanGrantTablePrivilege(identity, tableName.asSchemaTableName());
+        }
+    }
+
+    @Override
     public void checkCanSetSystemSessionProperty(Identity identity, String propertyName)
     {
         requireNonNull(identity, "identity is null");
