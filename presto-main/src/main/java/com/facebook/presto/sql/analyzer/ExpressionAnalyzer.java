@@ -26,6 +26,7 @@ import com.facebook.presto.spi.StandardErrorCode;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.TypeManager;
 import com.facebook.presto.spi.type.TypeSignature;
+import com.facebook.presto.spi.type.VarcharType;
 import com.facebook.presto.sql.parser.SqlParser;
 import com.facebook.presto.sql.planner.DependencyExtractor;
 import com.facebook.presto.sql.planner.Symbol;
@@ -564,8 +565,9 @@ public class ExpressionAnalyzer
         @Override
         protected Type visitStringLiteral(StringLiteral node, AnalysisContext context)
         {
-            expressionTypes.put(node, VARCHAR);
-            return VARCHAR;
+            VarcharType type = VarcharType.createVarcharType(node.getValue().length());
+            expressionTypes.put(node, type);
+            return type;
         }
 
         @Override
@@ -897,6 +899,7 @@ public class ExpressionAnalyzer
             Type actualType = process(expression, context);
             if (!actualType.equals(expectedType)) {
                 if (!canCoerce(actualType, expectedType)) {
+                    canCoerce(actualType, expectedType);
                     throw new SemanticException(TYPE_MISMATCH, expression, message + " must evaluate to a %s (actual: %s)", expectedType, actualType);
                 }
                 expressionCoercions.put(expression, expectedType);
