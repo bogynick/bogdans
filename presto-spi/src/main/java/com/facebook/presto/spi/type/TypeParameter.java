@@ -44,6 +44,11 @@ public class TypeParameter
         return new TypeParameter(ParameterKind.NAMED_TYPE_SIGNATURE, namedType);
     }
 
+    public static TypeParameter of(TypeLiteralCalculation literalCalculation)
+    {
+        return new TypeParameter(ParameterKind.LITERAL_CALCULATION, literalCalculation);
+    }
+
     public static TypeParameter of(TypeSignatureParameter parameter, TypeManager typeManager)
     {
         switch (parameter.getKind()) {
@@ -65,6 +70,8 @@ public class TypeParameter
                         parameter.getNamedTypeSignature().getName(),
                         type));
             }
+            case LITERAL_CALCULATION:
+                return of(parameter.getLiteralCalculation());
             default:
                 throw new UnsupportedOperationException(format("Unsupported parameter [%s]", parameter));
         }
