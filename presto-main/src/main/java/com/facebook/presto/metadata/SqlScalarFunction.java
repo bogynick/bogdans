@@ -109,6 +109,12 @@ public abstract class SqlScalarFunction
                 literalParameters);
     }
 
+    protected SqlScalarFunction(Signature signature)
+    {
+        this.signature = requireNonNull(signature, "signature is null");
+        checkArgument(signature.getKind() == SCALAR, "function kind must be SCALAR");
+    }
+
     @Override
     public final Signature getSignature()
     {
@@ -116,6 +122,11 @@ public abstract class SqlScalarFunction
     }
 
     public abstract ScalarFunctionImplementation specialize(Map<String, Type> types, List<TypeSignature> parameterTypes, TypeManager typeManager, FunctionRegistry functionRegistry);
+
+    public static SqlScalarFunctionBuilder builder(Class<?> clazz)
+    {
+        return new SqlScalarFunctionBuilder(clazz);
+    }
 
     private static class SimpleSqlScalarFunction
             extends SqlScalarFunction
