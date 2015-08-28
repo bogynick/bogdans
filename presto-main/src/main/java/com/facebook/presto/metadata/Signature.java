@@ -40,6 +40,7 @@ import static com.facebook.presto.metadata.FunctionKind.SCALAR;
 import static com.facebook.presto.metadata.FunctionRegistry.mangleOperatorName;
 import static com.facebook.presto.spi.type.TypeSignature.parseTypeSignature;
 import static com.facebook.presto.type.TypeRegistry.canCoerce;
+import static com.facebook.presto.type.TypeRegistry.getCommonSuperTypeSignature;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableList;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -264,7 +265,7 @@ public final class Signature
             }
             else {
                 TypeSignature otherParameter = commonSupperTypes.get(argument);
-                Optional<TypeSignature> commonSuperParameter = TypeRegistry.getCommonSuperTypeSignature(parameter, otherParameter);
+                Optional<TypeSignature> commonSuperParameter = getCommonSuperTypeSignature(parameter, otherParameter);
                 checkArgument(
                         commonSuperParameter.isPresent(),
                         "Parameters [%s] and [%s] must match to same signature [%s] but can not be coerced",
