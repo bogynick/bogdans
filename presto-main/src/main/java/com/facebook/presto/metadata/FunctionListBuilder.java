@@ -63,7 +63,7 @@ import static java.util.Objects.requireNonNull;
 
 public class FunctionListBuilder
 {
-    private static final Set<Class<?>> NON_NULLABLE_ARGUMENT_TYPES = ImmutableSet.<Class<?>>of(
+    private static final Set<Class<?>> NON_NULLABLE_ARGUMENT_TYPES = ImmutableSet.of(
             long.class,
             double.class,
             boolean.class,
@@ -352,25 +352,24 @@ public class FunctionListBuilder
                 literalParametersAnnotation != null ? literalParametersAnnotation.value() : new String[] {});
 
         List<TypeSignature> argumentTypes = parameterTypeSignatures(method, literalParameters);
+        TypeSignature returnTypeSignature;
 
-        TypeSignature returnType;
         if (operatorType == OperatorType.HASH_CODE) {
             // todo hack for hashCode... should be int
-            returnType = BIGINT.getTypeSignature();
+            returnTypeSignature = BIGINT.getTypeSignature();
         }
         else {
             SqlType explicitType = method.getAnnotation(SqlType.class);
             checkArgument(explicitType != null, "Method %s return type does not have a @SqlType annotation", method);
-            returnType = parseTypeSignature(explicitType.value(), literalParameters);
-
-            verifyMethodSignature(method, returnType, argumentTypes, typeManager);
+            returnTypeSignature = parseTypeSignature(explicitType.value(), literalParameters);
+            verifyMethodSignature(method, returnTypeSignature, argumentTypes, typeManager);
         }
 
         List<Boolean> nullableArguments = getNullableArguments(method);
 
         operator(
                 operatorType,
-                returnType,
+                returnTypeSignature,
                 argumentTypes,
                 methodHandle,
                 method.isAnnotationPresent(Nullable.class),

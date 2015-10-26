@@ -13,16 +13,12 @@
  */
 package com.facebook.presto.metadata;
 
-import com.facebook.presto.spi.type.TypeSignature;
-
 import java.util.List;
 import java.util.Set;
 
 import static com.facebook.presto.metadata.FunctionKind.SCALAR;
 import static com.facebook.presto.metadata.FunctionRegistry.mangleOperatorName;
-import static com.facebook.presto.spi.type.TypeSignature.parseTypeSignature;
 import static com.google.common.collect.ImmutableList.copyOf;
-import static com.google.common.collect.Lists.transform;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
