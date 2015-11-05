@@ -70,6 +70,9 @@ public class TestFunctionRegistry
             if (function.getSignature().getArgumentTypes().stream().anyMatch(TypeSignature::isCalculated)) {
                 continue;
             }
+            if (function.getSignature().getArgumentTypes().stream().anyMatch(TypeSignature::isCalculated)) {
+                continue;
+            }
             Signature exactOperator = registry.resolveOperator(operatorType, resolveTypes(function.getSignature().getArgumentTypes(), typeManager));
             assertEquals(exactOperator, function.getSignature());
             foundOperator = true;
