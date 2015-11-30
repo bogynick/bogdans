@@ -90,6 +90,11 @@ public class TypeParameter
         return target.cast(value);
     }
 
+    public boolean isLongLiteral()
+    {
+        return kind == ParameterKind.LONG_LITERAL;
+    }
+
     public Type getType()
     {
         return getValue(ParameterKind.TYPE_SIGNATURE, Type.class);
@@ -103,6 +108,11 @@ public class TypeParameter
     public NamedType getNamedType()
     {
         return getValue(ParameterKind.NAMED_TYPE_SIGNATURE, NamedType.class);
+    }
+
+    public TypeLiteralCalculation getLiteralCalculation()
+    {
+        return getValue(ParameterKind.LITERAL_CALCULATION, TypeLiteralCalculation.class);
     }
 
     @Override

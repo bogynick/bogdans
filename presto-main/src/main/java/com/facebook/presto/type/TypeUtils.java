@@ -230,6 +230,7 @@ public final class TypeUtils
                         inputs.put(parameter.getLiteralCalculation().getCalculation().toUpperCase(Locale.US), OptionalLong.empty());
                     }
                 }
+                return inputs;
             }
             else {
                 throw new IllegalArgumentException(format(

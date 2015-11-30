@@ -447,8 +447,13 @@ public class FunctionRegistry
             Signature signature = bindSignature(function.getSignature(), resolvedTypes, true, typeManager);
             if (signature != null) {
                 // TODO: This should also check for ambiguities
-                return signature;
+                match = signature;
+                break;
             }
+        }
+
+        if (match != null) {
+            return match.resolveCalculatedTypes(parameterTypes);
         }
 
         List<String> expectedParameters = new ArrayList<>();
