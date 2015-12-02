@@ -72,6 +72,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.facebook.presto.hive.HiveErrorCode.HIVE_METASTORE_ERROR;
 import static com.facebook.presto.hive.HiveUtil.PRESTO_VIEW_FLAG;
@@ -901,26 +902,23 @@ public class CachingHiveMetastore
                         try (HiveMetastoreClient metastoreClient = clientProvider.createMetastoreClient()) {
                             PrincipalType principalType;
 
-                            List<String> roles = metastoreClient.getRoleNames();
-
-                            if (roles.contains(identity.getUser())) {
+                            if (metastoreClient.getRoleNames().contains(identity.getUser())) {
                                 principalType = PrincipalType.ROLE;
                             }
                             else {
                                 principalType = PrincipalType.USER;
                             }
 
-                            ImmutableList.Builder<HiveObjectPrivilege> privilegeBagList = ImmutableList.builder();
+                            ImmutableList.Builder<HiveObjectPrivilege> privilegeBagBuilder = ImmutableList.builder();
                             for (PrivilegeGrantInfo privilegeGrantInfo : privilegeGrantInfoSet) {
-                                HiveObjectPrivilege privilegeObject = new HiveObjectPrivilege(
-                                    new HiveObjectRef(HiveObjectType.TABLE, databaseName, tableName, null, null), // TODO: handle grant on non-table objects
-                                    identity.getUser(),
-                                    principalType,
-                                    privilegeGrantInfo);
-                                privilegeBagList.add(privilegeObject);
+                                privilegeBagBuilder.add(
+                                        new HiveObjectPrivilege(new HiveObjectRef(HiveObjectType.TABLE, databaseName, tableName, null, null),
+                                        identity.getUser(),
+                                        principalType,
+                                        privilegeGrantInfo));
                             }
-                            // Should you check whether the user already has the given privilege and if yes, return.
-                            metastoreClient.grantPrivileges(new PrivilegeBag(privilegeBagList.build()));
+                            // TODO: check whether the user already has the given privilege and if yes, return.
+                            metastoreClient.grantPrivileges(new PrivilegeBag(privilegeBagBuilder.build()));
                         }
                         return null;
                     }));

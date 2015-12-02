@@ -322,7 +322,7 @@ explainOption
     ;
 
 privilege
-    : value=(SELECT | INSERT | DELETE )      #privilegeNode
+    : value=(SELECT | DELETE | INSERT | UPDATE)     #privilegeNode
     ;
 
 identity
@@ -463,6 +463,7 @@ INTO: 'INTO';
 CONSTRAINT: 'CONSTRAINT';
 DESCRIBE: 'DESCRIBE';
 GRANT: 'GRANT';
+UPDATE: 'UPDATE';
 PRIVILEGES: 'PRIVILEGES';
 PUBLIC: 'PUBLIC';
 OPTION: 'OPTION';

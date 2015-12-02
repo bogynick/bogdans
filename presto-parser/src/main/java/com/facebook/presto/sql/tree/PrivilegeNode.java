@@ -14,9 +14,7 @@
 package com.facebook.presto.sql.tree;
 
 import com.facebook.presto.spi.security.Privilege;
-import com.google.common.collect.ImmutableList;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
@@ -35,15 +33,6 @@ public class PrivilegeNode
     public Privilege getPrivilege()
     {
         return privilege;
-    }
-
-    public static List<PrivilegeNode> getAllPrivilegeNodes()
-    {
-        ImmutableList.Builder<PrivilegeNode> list = ImmutableList.builder();
-        for (Privilege privilege : Privilege.getAllPrivileges()) {
-            list.add(new PrivilegeNode(privilege));
-        }
-        return list.build();
     }
 
     @Override

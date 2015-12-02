@@ -89,11 +89,13 @@ import com.google.common.collect.Lists;
 import org.testng.annotations.Test;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.facebook.presto.spi.security.Privilege.PrivilegeType.DELETE;
-import static com.facebook.presto.spi.security.Privilege.PrivilegeType.INSERT;
-import static com.facebook.presto.spi.security.Privilege.PrivilegeType.SELECT;
+import static com.facebook.presto.spi.security.Privilege.DELETE;
+import static com.facebook.presto.spi.security.Privilege.INSERT;
+import static com.facebook.presto.spi.security.Privilege.SELECT;
 import static com.facebook.presto.sql.QueryUtil.query;
 import static com.facebook.presto.sql.QueryUtil.row;
 import static com.facebook.presto.sql.QueryUtil.selectList;
@@ -920,16 +922,18 @@ public class TestSqlParser
             throws Exception
     {
         assertStatement("GRANT INSERT, DELETE ON customer to admin",
-                new Grant(ImmutableList.of(new PrivilegeNode(new Privilege(INSERT)),
-                        new PrivilegeNode(new Privilege(DELETE))),
+                new Grant(ImmutableList.of(new PrivilegeNode(INSERT),
+                        new PrivilegeNode(DELETE)),
                         false, QualifiedName.of("customer"),
                         new IdentityNode(new Identity("admin", Optional.<Principal>empty())), false));
         assertStatement("GRANT SELECT ON orders to PUBLIC WITH GRANT OPTION",
-                new Grant(ImmutableList.of(new PrivilegeNode(new Privilege(SELECT))),
+                new Grant(ImmutableList.of(new PrivilegeNode(SELECT)),
                         false, QualifiedName.of("orders"),
                         new IdentityNode(new Identity("PUBLIC", Optional.<Principal>empty())), true));
         assertStatement("GRANT ALL PRIVILEGES ON nation to admin",
-                new Grant(PrivilegeNode.getAllPrivilegeNodes(),
+                new Grant(Arrays.stream(Privilege.values())
+                                .map(PrivilegeNode::new)
+                                .collect(Collectors.toList()),
                         false, QualifiedName.of("nation"),
                         new IdentityNode(new Identity("admin", Optional.<Principal>empty())), false));
     }

@@ -15,7 +15,6 @@ package com.facebook.presto.security;
 
 import com.facebook.presto.metadata.QualifiedTableName;
 import com.facebook.presto.spi.security.Identity;
-import com.facebook.presto.spi.security.Privilege;
 
 import java.security.Principal;
 
@@ -106,10 +105,10 @@ public interface AccessControl
     void checkCanCreateViewWithSelectFromView(Identity identity, QualifiedTableName viewName);
 
     /**
-     * Check if identity is allowed to grant to any other user the specified privilege on the specified table.
+     * Check if identity is allowed to grant a privilege on the specified table.
      * @throws com.facebook.presto.spi.security.AccessDeniedException if not allowed
      */
-    void checkCanGrantTablePrivilege(Identity identity, Privilege privilege, QualifiedTableName tableName);
+    void checkCanGrantTablePrivilege(Identity identity, QualifiedTableName tableName);
 
     /**
      * Check if identity is allowed to set the specified system property.

@@ -1281,12 +1281,12 @@ public class HiveMetadata
         // - check that the user/role exists in the hive metastore. If not, throw NotFoundException
         // - check whether the user already has the given privilege. If yes, there is nothing more to do, so return.
 
-        Set<PrivilegeGrantInfo> privilegeGrantInfoSet = new HashSet<>();
+        Set<PrivilegeGrantInfo> privilegeGrantInfoSet = privileges.stream()
+                .map(privilege1 -> {
+                    return new PrivilegeGrantInfo(privilege1.name().toLowerCase(), 0, session.getUser(), PrincipalType.USER, grantOption);
+                })
+                .collect(Collectors.toSet());
 
-        for (Privilege privilege : privileges) {
-            privilegeGrantInfoSet.add(new PrivilegeGrantInfo(privilege.getTypeString().toLowerCase(), 0,
-                                      session.getUser(), PrincipalType.USER, grantOption));
-        }
         metastore.grantTablePrivileges(schemaName, tableName, identity, privilegeGrantInfoSet);
     }
 

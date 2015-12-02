@@ -740,8 +740,8 @@ public final class SqlFormatter
             int size = node.getPrivilegeNodes().size();
 
             for (PrivilegeNode privilegeNode : node.getPrivilegeNodes()) {
-                builder.append(privilegeNode.getPrivilege().getTypeString());
-                size = size - 1;
+                builder.append(privilegeNode.getPrivilege().name());
+                size -= 1;
                 if (size > 0) {
                     builder.append(", ");
                 }
@@ -752,7 +752,7 @@ public final class SqlFormatter
             }
             builder.append(node.getTableName())
                     .append(" TO ")
-                    .append(node.getIdentityNode().getIdentity());
+                    .append(node.getIdentityNode().getIdentity().getUser());
             if (node.isOption()) {
                 builder.append(" WITH GRANT OPTION");
             }

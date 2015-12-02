@@ -45,7 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.facebook.presto.hive.AbstractTestHiveClient.listAllDataPaths;
 import static com.facebook.presto.hive.HiveUtil.createPartitionName;
 import static com.facebook.presto.hive.metastore.HivePrivilege.OWNERSHIP;
-import static com.facebook.presto.hive.metastore.HivePrivilege.parsePrivilege;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableSet;
 import static com.google.common.base.Preconditions.checkArgument;
 import static io.airlift.testing.FileUtils.deleteRecursively;
@@ -388,10 +387,11 @@ public class InMemoryHiveMetastore
     @Override
     public void grantTablePrivileges(String databaseName, String tableName, Identity identity, Set<PrivilegeGrantInfo> privilegeGrantInfoSet)
     {
-        Set<HivePrivilege> hivePrivileges = new HashSet<>();
-        for (PrivilegeGrantInfo privilegeGrantInfo : privilegeGrantInfoSet) {
-            hivePrivileges.addAll(parsePrivilege(privilegeGrantInfo));
-        }
+        Set<HivePrivilege> hivePrivileges = privilegeGrantInfoSet.stream()
+                .map(HivePrivilege::parsePrivilege)
+                .flatMap(Collection::stream)
+                .collect(toImmutableSet());
+
         setTablePrivileges(identity.getUser(), PrincipalType.USER, databaseName, tableName, hivePrivileges);
     }
 

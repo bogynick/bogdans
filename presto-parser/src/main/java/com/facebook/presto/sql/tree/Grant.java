@@ -32,10 +32,10 @@ public class Grant
 
     public Grant(List<PrivilegeNode> privilegeNodes, boolean table, QualifiedName tableName, IdentityNode identityNode, boolean withGrantOption)
     {
-        this.privilegeNodes = ImmutableList.copyOf(requireNonNull(privilegeNodes, "privilege is null"));
+        this.privilegeNodes = ImmutableList.copyOf(requireNonNull(privilegeNodes, "privilegeNodes is null"));
         this.table = table;
-        this.tableName = requireNonNull(tableName, "table name is null");
-        this.identityNode = requireNonNull(identityNode, "user/role is null");
+        this.tableName = requireNonNull(tableName, "tableName is null");
+        this.identityNode = requireNonNull(identityNode, "identityNode is null");
         this.withGrantOption = withGrantOption;
     }
 

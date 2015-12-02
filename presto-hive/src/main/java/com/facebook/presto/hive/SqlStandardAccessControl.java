@@ -18,7 +18,6 @@ import com.facebook.presto.hive.metastore.HivePrivilege;
 import com.facebook.presto.spi.SchemaTableName;
 import com.facebook.presto.spi.security.ConnectorAccessControl;
 import com.facebook.presto.spi.security.Identity;
-import com.facebook.presto.spi.security.Privilege;
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;
@@ -180,10 +179,10 @@ public class SqlStandardAccessControl
     }
 
     @Override
-    public void checkCanGrantTablePrivilege(Identity identity, Privilege privilege, SchemaTableName tableName)
+    public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
     {
         if (!checkTablePermission(identity, tableName, GRANT)) {
-            denyGrantTablePrivilege(privilege.toString(), tableName.toString(), identity.getUser());
+            denyGrantTablePrivilege(tableName.toString());
         }
     }
 

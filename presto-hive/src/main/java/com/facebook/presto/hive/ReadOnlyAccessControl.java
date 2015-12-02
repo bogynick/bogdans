@@ -16,7 +16,6 @@ package com.facebook.presto.hive;
 import com.facebook.presto.spi.SchemaTableName;
 import com.facebook.presto.spi.security.ConnectorAccessControl;
 import com.facebook.presto.spi.security.Identity;
-import com.facebook.presto.spi.security.Privilege;
 
 import static com.facebook.presto.spi.security.AccessDeniedException.denyAddColumn;
 import static com.facebook.presto.spi.security.AccessDeniedException.denyCreateTable;
@@ -117,8 +116,8 @@ public class ReadOnlyAccessControl
     }
 
     @Override
-    public void checkCanGrantTablePrivilege(Identity identity, Privilege privilege, SchemaTableName tableName)
+    public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
     {
-        denyGrantTablePrivilege(privilege.toString(), tableName.toString(), identity.getUser());
+        denyGrantTablePrivilege(tableName.toString());
     }
 }

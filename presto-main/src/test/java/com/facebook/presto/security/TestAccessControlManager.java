@@ -18,7 +18,6 @@ import com.facebook.presto.spi.PrestoException;
 import com.facebook.presto.spi.SchemaTableName;
 import com.facebook.presto.spi.security.ConnectorAccessControl;
 import com.facebook.presto.spi.security.Identity;
-import com.facebook.presto.spi.security.Privilege;
 import com.facebook.presto.spi.security.SystemAccessControl;
 import com.facebook.presto.spi.security.SystemAccessControlFactory;
 import com.google.common.collect.ImmutableMap;
@@ -236,7 +235,7 @@ public class TestAccessControlManager
         }
 
         @Override
-        public void checkCanGrantTablePrivilege(Identity identity, Privilege privilege, SchemaTableName tableName)
+        public void checkCanGrantTablePrivilege(Identity identity, SchemaTableName tableName)
         {
             throw new UnsupportedOperationException();
         }

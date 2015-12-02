@@ -24,9 +24,9 @@ import com.facebook.presto.sql.analyzer.SemanticException;
 import com.facebook.presto.sql.tree.Grant;
 import com.facebook.presto.sql.tree.PrivilegeNode;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.facebook.presto.metadata.MetadataUtil.createQualifiedTableName;
 import static com.facebook.presto.sql.analyzer.SemanticErrorCode.MISSING_TABLE;
@@ -49,24 +49,12 @@ public class GrantTask
             throw new SemanticException(MISSING_TABLE, statement, "Table '%s' does not exist", tableName);
         }
 
-        // TODO: check that the user/role exists -- I think that this check can't be performed at this level. Each connector will have
-        // to perform this check.
+        accessControl.checkCanGrantTablePrivilege(session.getIdentity(), tableName);
 
-        // check that the current user can grant the requested privilege on the table
-        // NOTE: You want to pass the identity from the session and NOT the identity from Grant node. Because the
-        // session carries "the current user" (or grantor's) information, where as the Grant node carries the grantee's information.
+        Set<Privilege> privileges = statement.getPrivilegeNodes().stream()
+                .map(PrivilegeNode::getPrivilege)
+                .collect(Collectors.toSet());
 
-        Set<Privilege> privileges = new HashSet<>();
-
-        for (PrivilegeNode privilegeNode : statement.getPrivilegeNodes()) {
-            accessControl.checkCanGrantTablePrivilege(session.getIdentity(), privilegeNode.getPrivilege(), tableName);
-
-            // TODO: if [WITH GRANT OPTION] is present, check that the current user has the ("GRANT") privilege to grant the privilege
-
-            privileges.add(privilegeNode.getPrivilege());
-        }
-        // I don't fully understand the Identity object; what is user and what is principal? For now, I am passing grantee
-        // as the user, but not sure if this is right.
         Identity identity = statement.getIdentityNode().getIdentity();
 
         metadata.grantTablePrivileges(session, tableName, privileges, identity, statement.isOption());

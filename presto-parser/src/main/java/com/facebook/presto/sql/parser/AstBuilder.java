@@ -125,6 +125,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -485,7 +486,9 @@ class AstBuilder
 
         List<PrivilegeNode> privilegeNodes;
         if (context.ALL() != null && context.PRIVILEGES() != null) {
-            privilegeNodes = PrivilegeNode.getAllPrivilegeNodes();
+            privilegeNodes = Arrays.stream(Privilege.values())
+                    .map(PrivilegeNode::new)
+                    .collect(Collectors.toList());
         }
         else {
             privilegeNodes = visit(context.privilege(), PrivilegeNode.class);
@@ -503,11 +506,13 @@ class AstBuilder
     {
         switch (context.value.getType()) {
             case SqlBaseLexer.SELECT:
-                return new PrivilegeNode(new Privilege(Privilege.PrivilegeType.SELECT));
+                return new PrivilegeNode((Privilege.SELECT));
             case SqlBaseLexer.INSERT:
-                return new PrivilegeNode(new Privilege(Privilege.PrivilegeType.INSERT));
+                return new PrivilegeNode((Privilege.INSERT));
             case SqlBaseLexer.DELETE:
-                return new PrivilegeNode(new Privilege(Privilege.PrivilegeType.DELETE));
+                return new PrivilegeNode((Privilege.DELETE));
+            case SqlBaseLexer.UPDATE:
+                return new PrivilegeNode(Privilege.UPDATE);
         }
         throw new IllegalArgumentException("Unsupported Privilege: " + context.value.toString());
     }
