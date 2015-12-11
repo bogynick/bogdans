@@ -177,7 +177,10 @@ public final class TypeUtils
         }
     }
 
-    public static TypeSignature resolveCalculatedType(TypeSignature typeSignature, Map<String, OptionalLong> inputs)
+    public static TypeSignature resolveCalculatedType(
+            TypeSignature typeSignature,
+            Map<String, OptionalLong> inputs,
+            boolean allowExpressionsInSignature)
     {
         ImmutableList.Builder<TypeSignatureParameter> parametersBuilder = ImmutableList.builder();
 
@@ -185,12 +188,16 @@ public final class TypeUtils
         for (TypeSignatureParameter parameter : typeSignature.getParameters()) {
             switch (parameter.getKind()) {
                 case TYPE_SIGNATURE:
-                    parametersBuilder.add(TypeSignatureParameter.of(resolveCalculatedType(parameter.getTypeSignature(), inputs)));
+                    parametersBuilder.add(TypeSignatureParameter.of(resolveCalculatedType(
+                            parameter.getTypeSignature(),
+                            inputs,
+                            allowExpressionsInSignature)));
                     break;
                 case LITERAL_CALCULATION: {
                     OptionalLong optionalLong = TypeCalculation.calculateLiteralValue(
                             parameter.getLiteralCalculation().getCalculation(),
-                            inputs);
+                            inputs,
+                            allowExpressionsInSignature);
                     if (optionalLong.isPresent()) {
                         parametersBuilder.add(TypeSignatureParameter.of(optionalLong.getAsLong()));
                     }
@@ -214,20 +221,27 @@ public final class TypeUtils
         return new TypeSignature(typeSignature.getBase(), calculatedParameters);
     }
 
-    public static Map<String, OptionalLong> extractCalculationInputs(TypeSignature typeSignature, TypeSignature actualType)
+    public static Map<String, OptionalLong> extractCalculationInputs(TypeSignature declaredType, TypeSignature actualType)
     {
-        if (!typeSignature.isCalculated()) {
+        if (!declaredType.isCalculated()) {
             return emptyMap();
         }
         Map<String, OptionalLong> inputs = new HashMap<>();
 
-        List<TypeSignatureParameter> parameters = typeSignature.getParameters();
+        List<TypeSignatureParameter> declaredParameters = declaredType.getParameters();
         List<TypeSignatureParameter> actualParameters = actualType.getParameters();
-        if (parameters.size() != actualParameters.size()) {
+        if (declaredParameters.size() != actualParameters.size()) {
             if (actualParameters.isEmpty()) {
+<<<<<<< HEAD
                 for (TypeSignatureParameter parameter : parameters) {
                     if (parameter.isLiteralCalculation()) {
                         inputs.put(parameter.getLiteralCalculation().getCalculation().toUpperCase(Locale.US), OptionalLong.empty());
+=======
+                for (TypeSignatureParameter parameter : declaredParameters) {
+                    Optional<TypeLiteralCalculation> literalCalculation = parameter.getLiteralCalculation();
+                    if (literalCalculation.isPresent()) {
+                        inputs.put(literalCalculation.get().getCalculation().toUpperCase(Locale.US), OptionalLong.empty());
+>>>>>>> 5c870a5... Applied post review comments to generalized row type
                     }
                 }
                 return inputs;
@@ -235,24 +249,29 @@ public final class TypeUtils
             else {
                 throw new IllegalArgumentException(format(
                         "Number of parameters for typeSignature [%s] and actualType [%s] don't match",
-                        typeSignature,
+                        declaredType,
                         actualType));
             }
         }
 
-        for (int index = 0; index < parameters.size(); index++) {
-            TypeSignatureParameter parameter = parameters.get(index);
+        for (int index = 0; index < declaredParameters.size(); index++) {
+            TypeSignatureParameter declaredParameter = declaredParameters.get(index);
             TypeSignatureParameter actualParameter = actualParameters.get(index);
 
+<<<<<<< HEAD
             if (parameter.isTypeSignature()) {
+=======
+            if (declaredParameter.getTypeSignature().isPresent()) {
+>>>>>>> 5c870a5... Applied post review comments to generalized row type
                 checkState(
                         actualParameter.isTypeSignature(),
                         "typeSignature [%s] and actualType [%s] mismatch",
-                        typeSignature,
+                        declaredType,
                         actualType);
 
-                if (parameter.isCalculated()) {
+                if (declaredParameter.isCalculated()) {
                     inputs.putAll(extractCalculationInputs(
+<<<<<<< HEAD
                             parameter.getTypeSignature(),
                             actualParameter.getTypeSignature()));
                 }
@@ -260,6 +279,15 @@ public final class TypeUtils
             else if (parameter.isLiteralCalculation()) {
                 TypeLiteralCalculation calculation = parameter.getLiteralCalculation();
                 if (!actualParameter.isLongLiteral()) {
+=======
+                            declaredParameter.getTypeSignature().get(),
+                            actualParameter.getTypeSignature().get()));
+                }
+            }
+            else if (declaredParameter.getLiteralCalculation().isPresent()) {
+                TypeLiteralCalculation calculation = declaredParameter.getLiteralCalculation().get();
+                if (!actualParameter.getLongLiteral().isPresent()) {
+>>>>>>> 5c870a5... Applied post review comments to generalized row type
                     throw new IllegalArgumentException(format("Expected type %s parameter %s to be a number literal", actualType, index));
                 }
                 inputs.put(calculation.getCalculation().toUpperCase(Locale.US), OptionalLong.of(actualParameter.getLongLiteral()));
