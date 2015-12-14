@@ -240,6 +240,9 @@ public final class TypeRegistry
         return firstTypeBase.equals(StandardTypes.ARRAY);
     }
 
+    /*
+     * Return true if actualType can be coerced to expectedType AND they are both binary compatible (so it's only type coercion)
+     */
     public static boolean isTypeOnlyCoercion(TypeSignature actualType, TypeSignature expectedType)
     {
         if (!canCoerce(actualType, expectedType)) {
