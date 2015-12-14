@@ -232,16 +232,9 @@ public final class TypeUtils
         List<TypeSignatureParameter> actualParameters = actualType.getParameters();
         if (declaredParameters.size() != actualParameters.size()) {
             if (actualParameters.isEmpty()) {
-<<<<<<< HEAD
-                for (TypeSignatureParameter parameter : parameters) {
+                for (TypeSignatureParameter parameter : declaredParameters) {
                     if (parameter.isLiteralCalculation()) {
                         inputs.put(parameter.getLiteralCalculation().getCalculation().toUpperCase(Locale.US), OptionalLong.empty());
-=======
-                for (TypeSignatureParameter parameter : declaredParameters) {
-                    Optional<TypeLiteralCalculation> literalCalculation = parameter.getLiteralCalculation();
-                    if (literalCalculation.isPresent()) {
-                        inputs.put(literalCalculation.get().getCalculation().toUpperCase(Locale.US), OptionalLong.empty());
->>>>>>> 5c870a5... Applied post review comments to generalized row type
                     }
                 }
                 return inputs;
@@ -258,11 +251,7 @@ public final class TypeUtils
             TypeSignatureParameter declaredParameter = declaredParameters.get(index);
             TypeSignatureParameter actualParameter = actualParameters.get(index);
 
-<<<<<<< HEAD
-            if (parameter.isTypeSignature()) {
-=======
-            if (declaredParameter.getTypeSignature().isPresent()) {
->>>>>>> 5c870a5... Applied post review comments to generalized row type
+            if (declaredParameter.isTypeSignature()) {
                 checkState(
                         actualParameter.isTypeSignature(),
                         "typeSignature [%s] and actualType [%s] mismatch",
@@ -271,23 +260,13 @@ public final class TypeUtils
 
                 if (declaredParameter.isCalculated()) {
                     inputs.putAll(extractCalculationInputs(
-<<<<<<< HEAD
-                            parameter.getTypeSignature(),
+                            declaredParameter.getTypeSignature(),
                             actualParameter.getTypeSignature()));
                 }
             }
-            else if (parameter.isLiteralCalculation()) {
-                TypeLiteralCalculation calculation = parameter.getLiteralCalculation();
+            else if (declaredParameter.isLiteralCalculation()) {
+                TypeLiteralCalculation calculation = declaredParameter.getLiteralCalculation();
                 if (!actualParameter.isLongLiteral()) {
-=======
-                            declaredParameter.getTypeSignature().get(),
-                            actualParameter.getTypeSignature().get()));
-                }
-            }
-            else if (declaredParameter.getLiteralCalculation().isPresent()) {
-                TypeLiteralCalculation calculation = declaredParameter.getLiteralCalculation().get();
-                if (!actualParameter.getLongLiteral().isPresent()) {
->>>>>>> 5c870a5... Applied post review comments to generalized row type
                     throw new IllegalArgumentException(format("Expected type %s parameter %s to be a number literal", actualType, index));
                 }
                 inputs.put(calculation.getCalculation().toUpperCase(Locale.US), OptionalLong.of(actualParameter.getLongLiteral()));

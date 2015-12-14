@@ -196,6 +196,7 @@ import static com.facebook.presto.sql.tree.FrameBound.Type.PRECEDING;
 import static com.facebook.presto.sql.tree.FrameBound.Type.UNBOUNDED_FOLLOWING;
 import static com.facebook.presto.sql.tree.FrameBound.Type.UNBOUNDED_PRECEDING;
 import static com.facebook.presto.sql.tree.WindowFrame.Type.RANGE;
+import static com.facebook.presto.type.TypeRegistry.isTypeOnlyCoercion;
 import static com.facebook.presto.type.UnknownType.UNKNOWN;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableList;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableSet;
@@ -589,7 +590,7 @@ class StatementAnalyzer
                 }
             }
             else {
-                if (!Objects.equals(tableType, queryType) && !FunctionRegistry.isTypeOnlyCoercion(queryType, tableType)) {
+                if (!Objects.equals(tableType, queryType) && !isTypeOnlyCoercion(queryType.getTypeSignature(), tableType.getTypeSignature())) {
                     return false;
                 }
             }

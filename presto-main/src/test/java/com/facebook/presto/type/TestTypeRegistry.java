@@ -100,6 +100,8 @@ public class TestTypeRegistry
         assertCommonSuperType("map<bigint,double>", "map<bigint,double>", "map<bigint,double>");
         assertCommonSuperType("map<bigint,double>", "map<double,double>", null); // map covariant cast is not supported yet
         assertCommonSuperType("row<bigint,double,varchar>('a','b','c')", "row<bigint,double,varchar>('a','b','c')", "row<bigint,double,varchar>('a','b','c')");
+
+        assertCommonSuperType("varchar(42)", "varchar(44)", "varchar(44)");
     }
 
     private void assertCommonSuperType(Type firstType, Type secondType, Type expected)
