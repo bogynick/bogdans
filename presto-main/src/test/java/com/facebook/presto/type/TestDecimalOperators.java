@@ -26,6 +26,7 @@ public class TestDecimalOperators
     public void testAdd()
             throws Exception
     {
+        assertDecimalFunction("DECIMAL 0.7 + DECIMAL 1", decimal("1.7"));
         // short short -> short
         assertDecimalFunction("DECIMAL 37.7 + DECIMAL 17.1", decimal("054.8"));
         assertDecimalFunction("DECIMAL -1 + DECIMAL -2", decimal("-03"));
