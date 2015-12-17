@@ -55,7 +55,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static long addShortShortShort(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
@@ -63,7 +63,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static Slice addShortShortLong(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
@@ -74,7 +74,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static Slice addLongLongLong(@SqlType("decimal(p, s)") Slice a, @SqlType("decimal(p, s)") Slice b)
     {
@@ -86,7 +86,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(SUBTRACT)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static long subtractShortShortShort(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
@@ -94,7 +94,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(SUBTRACT)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static Slice subtractShortShortLong(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
@@ -105,7 +105,7 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(SUBTRACT)
-    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @LiteralParameters({"p", "s"})
     @SqlType("decimal(min(38, p + 1), s)")
     public static Slice subtractLongLongLong(@SqlType("decimal(p, s)") Slice a, @SqlType("decimal(p, s)") Slice b)
     {
@@ -121,7 +121,7 @@ public final class DecimalOperators
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(MULTIPLY)
-                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", "a_scale + b_scale", "min(38, a_precision + b_precision)")
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale")
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType("decimal(min(38, a_precision + b_precision), a_scale + b_scale)")
                 .build();
@@ -183,7 +183,7 @@ public final class DecimalOperators
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(DIVIDE)
-                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", resultScale, resultPrecision)
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale")
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType(resultType)
                 .build();
@@ -308,7 +308,7 @@ public final class DecimalOperators
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(MODULUS)
-                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", "min(b_precision - b_scale, a_precision - a_scale) + max(a_scale, b_scale)", "max(a_scale, b_scale)")
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale")
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType("decimal(min(b_precision - b_scale, a_precision - a_scale) + max(a_scale, b_scale), max(a_scale, b_scale))")
                 .build();
