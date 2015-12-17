@@ -26,7 +26,6 @@ public class TestDecimalOperators
     public void testAdd()
             throws Exception
     {
-        assertDecimalFunction("DECIMAL 0.7 + DECIMAL 1", decimal("1.7"));
         // short short -> short
         assertDecimalFunction("DECIMAL 37.7 + DECIMAL 17.1", decimal("054.8"));
         assertDecimalFunction("DECIMAL -1 + DECIMAL -2", decimal("-03"));
@@ -34,6 +33,8 @@ public class TestDecimalOperators
         assertDecimalFunction("DECIMAL .1234567890123456 + DECIMAL .1234567890123456", decimal("0.2469135780246912"));
         assertDecimalFunction("DECIMAL -.1234567890123456 + DECIMAL -.1234567890123456", decimal("-0.2469135780246912"));
         assertDecimalFunction("DECIMAL 1234567890123456 + DECIMAL 1234567890123456", decimal("02469135780246912"));
+        // different length
+        assertDecimalFunction("DECIMAL .7 + DECIMAL 1", decimal("01.7"));
 
         // long long -> long
         assertDecimalFunction("DECIMAL 123456789012345678 + DECIMAL 123456789012345678", decimal("0246913578024691356"));

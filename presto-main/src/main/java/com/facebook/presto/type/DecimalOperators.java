@@ -40,6 +40,7 @@ import static com.facebook.presto.metadata.OperatorType.SUBTRACT;
 import static com.facebook.presto.spi.StandardErrorCode.DIVISION_BY_ZERO;
 import static com.facebook.presto.util.DecimalUtils.checkOverflow;
 import static java.lang.Integer.max;
+import static java.lang.String.format;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
@@ -55,17 +56,17 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "p2", "s2", "min(38, max(p, p2) + 1)", "max(s, s2)"})
-    @SqlType("decimal(min(38, max(p, p2) + 1), max(s, s2))")
-    public static long addShortShortShort(@SqlType("decimal(p,s)") long a, @SqlType("decimal(p2,s2)") long b)
+    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static long addShortShortShort(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
         return a + b;
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "p2", "s2", "min(38, max(p, p2) + 1)", "max(s, s2)"})
-    @SqlType("decimal(min(38, max(p, p2) + 1), max(s, s2))")
-    public static Slice addShortShortLong(@SqlType("decimal(p,s)") long a, @SqlType("decimal(p2,s2)") long b)
+    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static Slice addShortShortLong(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
         BigInteger aBigInteger = BigInteger.valueOf(a);
         BigInteger bBigInteger = BigInteger.valueOf(b);
@@ -74,9 +75,9 @@ public final class DecimalOperators
     }
 
     @ScalarOperator(ADD)
-    @LiteralParameters({"p", "s", "p2", "s2", "min(38, max(p, p2) + 1)", "max(s, s2)"})
-    @SqlType("decimal(min(38, max(p, p2) + 1), max(s, s2))")
-    public static Slice addLongLongLong(@SqlType("decimal(p,s)") Slice a, @SqlType("decimal(p2,s2)") Slice b)
+    @LiteralParameters({"p", "s", "min(38, p + 1)"})
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static Slice addLongLongLong(@SqlType("decimal(p, s)") Slice a, @SqlType("decimal(p, s)") Slice b)
     {
         BigInteger aBigInteger = LongDecimalType.unscaledValueToBigInteger(a);
         BigInteger bBigInteger = LongDecimalType.unscaledValueToBigInteger(b);
@@ -87,16 +88,16 @@ public final class DecimalOperators
 
     @ScalarOperator(SUBTRACT)
     @LiteralParameters({"p", "s", "min(38, p + 1)"})
-    @SqlType("decimal(min(38, p + 1),s)")
-    public static long subtractShortShortShort(@SqlType("decimal(p,s)") long a, @SqlType("decimal(p,s)") long b)
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static long subtractShortShortShort(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
         return a - b;
     }
 
     @ScalarOperator(SUBTRACT)
     @LiteralParameters({"p", "s", "min(38, p + 1)"})
-    @SqlType("decimal(min(38, p + 1),s)")
-    public static Slice subtractShortShortLong(@SqlType("decimal(p,s)") long a, @SqlType("decimal(p,s)") long b)
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static Slice subtractShortShortLong(@SqlType("decimal(p, s)") long a, @SqlType("decimal(p, s)") long b)
     {
         BigInteger aBigInteger = BigInteger.valueOf(a);
         BigInteger bBigInteger = BigInteger.valueOf(b);
@@ -106,8 +107,8 @@ public final class DecimalOperators
 
     @ScalarOperator(SUBTRACT)
     @LiteralParameters({"p", "s", "min(38, p + 1)"})
-    @SqlType("decimal(min(38, p + 1),s)")
-    public static Slice subtractLongLongLong(@SqlType("decimal(p,s)") Slice a, @SqlType("decimal(p,s)") Slice b)
+    @SqlType("decimal(min(38, p + 1), s)")
+    public static Slice subtractLongLongLong(@SqlType("decimal(p, s)") Slice a, @SqlType("decimal(p, s)") Slice b)
     {
         BigInteger aBigInteger = LongDecimalType.unscaledValueToBigInteger(a);
         BigInteger bBigInteger = LongDecimalType.unscaledValueToBigInteger(b);
@@ -121,6 +122,7 @@ public final class DecimalOperators
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(MULTIPLY)
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", "a_scale + b_scale", "min(38, a_precision + b_precision)")
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType("decimal(min(38, a_precision + b_precision), a_scale + b_scale)")
                 .build();
@@ -176,10 +178,13 @@ public final class DecimalOperators
         // pessimistic case is a / 0.0000001
         // if scale of divisor is greater than scale of dividend we extend scale further as we
         // want result scale to be maximum of scales of divisor and dividend.
-        String resultType = "decimal(min(38, a_precision + b_scale + max(b_scale - a_scale, 0)), max(a_scale, b_scale))";
+        String resultPrecision = "min(38, a_precision + b_scale + max(b_scale - a_scale, 0))";
+        String resultScale = "max(a_scale, b_scale)";
+        String resultType = format("decimal(%s,%s)", resultPrecision, resultScale);
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(DIVIDE)
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", resultScale, resultPrecision)
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType(resultType)
                 .build();
@@ -392,16 +397,16 @@ public final class DecimalOperators
 
     @ScalarOperator(NEGATION)
     @LiteralParameters({"p", "s"})
-    @SqlType("decimal(p,s)")
-    public static long negate(@SqlType("decimal(p,s)") long arg)
+    @SqlType("decimal(p, s)")
+    public static long negate(@SqlType("decimal(p, s)") long arg)
     {
         return -arg;
     }
 
     @ScalarOperator(NEGATION)
     @LiteralParameters({"p", "s"})
-    @SqlType("decimal(p,s)")
-    public static Slice negate(@SqlType("decimal(p,s)") Slice arg)
+    @SqlType("decimal(p, s)")
+    public static Slice negate(@SqlType("decimal(p, s)") Slice arg)
     {
         BigInteger argBigInteger = LongDecimalType.unscaledValueToBigInteger(arg);
         return LongDecimalType.unscaledValueToSlice(argBigInteger.negate());
