@@ -23,7 +23,6 @@ import com.facebook.presto.spi.type.DecimalType;
 import com.facebook.presto.spi.type.LongDecimalType;
 import com.facebook.presto.spi.type.ShortDecimalType;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import io.airlift.slice.Slice;
 
 import java.lang.invoke.MethodHandle;
@@ -309,7 +308,7 @@ public final class DecimalOperators
         Signature signature = Signature.builder()
                 .kind(SCALAR)
                 .operatorType(MODULUS)
-                .literalParameters(ImmutableSet.of("a_precision", "a_scale", "b_precision", "b_scale", "min(b_precision - b_scale, a_precision - a_scale) + max(a_scale, b_scale)", "max(a_scale, b_scale)"))
+                .literalParameters("a_precision", "a_scale", "b_precision", "b_scale", "min(b_precision - b_scale, a_precision - a_scale) + max(a_scale, b_scale)", "max(a_scale, b_scale)")
                 .argumentTypes("decimal(a_precision, a_scale)", "decimal(b_precision, b_scale)")
                 .returnType("decimal(min(b_precision - b_scale, a_precision - a_scale) + max(a_scale, b_scale), max(a_scale, b_scale))")
                 .build();

@@ -21,7 +21,6 @@ import com.facebook.presto.spi.type.DecimalType;
 import com.facebook.presto.spi.type.LongDecimalType;
 import com.facebook.presto.spi.type.ShortDecimalType;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import io.airlift.slice.Slice;
 import io.airlift.slice.Slices;
 
@@ -64,7 +63,7 @@ public final class DecimalCasts
                 .kind(SCALAR)
                 .operatorType(CAST)
                 .argumentTypes("decimal(precision,scale)")
-                .literalParameters(ImmutableSet.of("precision", "scale"))
+                .literalParameters("precision", "scale")
                 .returnType(to)
                 .build();
         return SqlScalarFunction.builder(DecimalCasts.class)
