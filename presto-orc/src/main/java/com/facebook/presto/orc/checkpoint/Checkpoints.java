@@ -105,6 +105,8 @@ public final class Checkpoints
                     break;
                 case BINARY:
                 case STRING:
+                case CHAR:
+                case VARCHAR:
                     checkpoints.putAll(getSliceColumnCheckpoints(column, columnEncoding, compressionKind, availableStreams, columnPositionsList));
                     break;
                 case LIST:
@@ -115,8 +117,6 @@ public final class Checkpoints
                     checkpoints.putAll(getStructColumnCheckpoints(column, compressionKind, availableStreams, columnPositionsList));
                     break;
                 case DECIMAL:
-                case CHAR:
-                case VARCHAR:
                 case UNION:
                     throw new IllegalArgumentException("Unsupported column type " + columnType);
             }
