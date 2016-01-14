@@ -31,6 +31,7 @@ import com.facebook.presto.spi.PageIndexerFactory;
 import com.facebook.presto.spi.type.TypeManager;
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
@@ -106,7 +107,16 @@ public class HiveClientModule
 
         binder.bind(HivePartitionManager.class).in(Scopes.SINGLETON);
         binder.bind(LocationService.class).to(HiveLocationService.class).in(Scopes.SINGLETON);
-        binder.bind(ConnectorMetadata.class).to(HiveMetadata.class).in(Scopes.SINGLETON);
+        binder.install(new PrivateModule()
+        {
+            @Override
+            protected void configure()
+            {
+                bind(HiveMetadata.class).in(Scopes.SINGLETON);
+                bind(ConnectorMetadata.class).to(HdfsAuthenticatingMetadata.class).in(Scopes.SINGLETON);
+                expose(ConnectorMetadata.class);
+            }
+        });
         binder.bind(ConnectorSplitManager.class).to(HiveSplitManager.class).in(Scopes.SINGLETON);
         binder.bind(ConnectorPageSourceProvider.class).to(HivePageSourceProvider.class).in(Scopes.SINGLETON);
         binder.bind(ConnectorPageSinkProvider.class).to(HivePageSinkProvider.class).in(Scopes.SINGLETON);
