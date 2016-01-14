@@ -49,6 +49,7 @@ public class StageStats
     private final int completedDrivers;
 
     private final DataSize totalMemoryReservation;
+    private final DataSize peekMemoryReservation;
 
     private final Duration totalScheduledTime;
     private final Duration totalCpuTime;
@@ -81,6 +82,7 @@ public class StageStats
         this.runningDrivers = 0;
         this.completedDrivers = 0;
         this.totalMemoryReservation = null;
+        this.peekMemoryReservation = null;
         this.totalScheduledTime = null;
         this.totalCpuTime = null;
         this.totalUserTime = null;
@@ -113,6 +115,7 @@ public class StageStats
             @JsonProperty("completedDrivers") int completedDrivers,
 
             @JsonProperty("totalMemoryReservation") DataSize totalMemoryReservation,
+            @JsonProperty("peekMemoryReservation") DataSize peekMemoryReservation,
 
             @JsonProperty("totalScheduledTime") Duration totalScheduledTime,
             @JsonProperty("totalCpuTime") Duration totalCpuTime,
@@ -152,6 +155,7 @@ public class StageStats
         this.completedDrivers = completedDrivers;
 
         this.totalMemoryReservation = requireNonNull(totalMemoryReservation, "totalMemoryReservation is null");
+        this.peekMemoryReservation = requireNonNull(peekMemoryReservation, "peekMemoryReservation is null");
 
         this.totalScheduledTime = requireNonNull(totalScheduledTime, "totalScheduledTime is null");
         this.totalCpuTime = requireNonNull(totalCpuTime, "totalCpuTime is null");
@@ -243,6 +247,12 @@ public class StageStats
     public DataSize getTotalMemoryReservation()
     {
         return totalMemoryReservation;
+    }
+
+    @JsonProperty
+    public DataSize getPeekMemoryReservation()
+    {
+        return peekMemoryReservation;
     }
 
     @JsonProperty
