@@ -32,11 +32,11 @@ import java.util.List;
 public class HdfsAuthenticatingSplitManager
         implements ConnectorSplitManager
 {
-    private final HadoopKerberosAuthentication authentication;
+    private final HadoopKerberosImpersonatingAuthentication authentication;
     private final HiveSplitManager targetSplitManager;
 
     @Inject
-    public HdfsAuthenticatingSplitManager(HadoopKerberosAuthentication authentication, HiveSplitManager targetSplitManager)
+    public HdfsAuthenticatingSplitManager(HadoopKerberosImpersonatingAuthentication authentication, HiveSplitManager targetSplitManager)
     {
         this.authentication = authentication;
         this.targetSplitManager = targetSplitManager;
