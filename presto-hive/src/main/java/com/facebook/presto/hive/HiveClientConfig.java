@@ -877,9 +877,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.metastore.sasl.enabled")
-    public void setHiveMetastoreSaslEnabled(boolean hiveMetastoreSaslEnabled)
+    public HiveClientConfig setHiveMetastoreSaslEnabled(boolean hiveMetastoreSaslEnabled)
     {
         this.hiveMetastoreSaslEnabled = hiveMetastoreSaslEnabled;
+        return this;
     }
 
     public String getHiveMetastorePrincipal()
@@ -888,9 +889,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.metastore.principal")
-    public void setHiveMetastorePrincipal(String hiveMetastorePrincipal)
+    public HiveClientConfig setHiveMetastorePrincipal(String hiveMetastorePrincipal)
     {
         this.hiveMetastorePrincipal = hiveMetastorePrincipal;
+        return this;
     }
 
     public String getHiveMetastorePrestoPrincipal()
@@ -899,9 +901,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.metastore.presto.principal")
-    public void setHiveMetastorePrestoPrincipal(String hiveMetastorePrestoPrincipal)
+    public HiveClientConfig setHiveMetastorePrestoPrincipal(String hiveMetastorePrestoPrincipal)
     {
         this.hiveMetastorePrestoPrincipal = hiveMetastorePrestoPrincipal;
+        return this;
     }
 
     public String getHiveMetastorePrestoKeytab()
@@ -910,9 +913,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.metastore.presto.keytab")
-    public void setHiveMetastorePrestoKeytab(String hiveMetastorePrestoKeytab)
+    public HiveClientConfig setHiveMetastorePrestoKeytab(String hiveMetastorePrestoKeytab)
     {
         this.hiveMetastorePrestoKeytab = hiveMetastorePrestoKeytab;
+        return this;
     }
 
     public boolean isHdfsSaslEnabled()
@@ -921,9 +925,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.hdfs.sasl.enabled")
-    public void setHdfsSaslEnabled(boolean hdfsSaslEnabled)
+    public HiveClientConfig setHdfsSaslEnabled(boolean hdfsSaslEnabled)
     {
         this.hdfsSaslEnabled = hdfsSaslEnabled;
+        return this;
     }
 
     public String getHdfsPrestoPrincipal()
@@ -932,9 +937,10 @@ public class HiveClientConfig
     }
 
     @Config("hive.hdfs.presto.principal")
-    public void setHdfsPrestoPrincipal(String hdfsPrestoPrincipal)
+    public HiveClientConfig setHdfsPrestoPrincipal(String hdfsPrestoPrincipal)
     {
         this.hdfsPrestoPrincipal = hdfsPrestoPrincipal;
+        return this;
     }
 
     public String getHdfsPrestoKeytab()
@@ -943,8 +949,9 @@ public class HiveClientConfig
     }
 
     @Config("hive.hdfs.presto.keytab")
-    public void setHdfsPrestoKeytab(String hdfsPrestoKeytab)
+    public HiveClientConfig setHdfsPrestoKeytab(String hdfsPrestoKeytab)
     {
         this.hdfsPrestoKeytab = hdfsPrestoKeytab;
+        return this;
     }
 }
