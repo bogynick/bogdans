@@ -19,7 +19,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 
 import java.io.IOException;
 
-public class HadoopSimpleAuthentication
+public class HadoopSimpleImpersonatingAuthentication
         implements HadoopAuthentication
 {
     @Override
