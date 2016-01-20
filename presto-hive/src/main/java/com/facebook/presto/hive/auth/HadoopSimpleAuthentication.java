@@ -38,4 +38,10 @@ public class HadoopSimpleAuthentication
             throw Throwables.propagate(e);
         }
     }
+
+    @Override
+    public UserGroupInformation getUserGroupInformation(String user)
+    {
+        return UserGroupInformation.createProxyUser(user, getUserGroupInformation());
+    }
 }
