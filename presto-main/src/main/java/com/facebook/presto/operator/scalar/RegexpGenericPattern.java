@@ -33,17 +33,20 @@ import io.airlift.slice.Slice;
 import io.airlift.slice.SliceOutput;
 
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
 
 import static com.facebook.presto.operator.scalar.RegexpGenericPattern.RegexLibrary.JONI;
 import static com.facebook.presto.operator.scalar.RegexpGenericPattern.RegexLibrary.RE2J;
 import static com.facebook.presto.spi.StandardErrorCode.INVALID_FUNCTION_ARGUMENT;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.re2j.Options.Algorithm.DFA_FALLBACK_TO_NFA;
 import static java.lang.String.format;
 
 public final class RegexpGenericPattern
 {
-    private static final String DOT_STAR = ".*";
+    private static final java.util.regex.Pattern DOT_STAR_PREFIX_SUFFIX_PATTERN = java.util.regex.Pattern.compile("^(\\.\\*\\??)?(.*?)(\\.\\*\\??)?$");
+    private static final int CORE_PATTERN_INDEX = 2;
 
     private static final Logger log = Logger.get(RegexpGenericPattern.class);
 
@@ -83,14 +86,9 @@ public final class RegexpGenericPattern
             re2jPattern = Pattern.compile(patternString, options);
 
             // Remove .* prefix and suffix. This will give performance boost when using RE2J Pattern.find() function.
-            String patternStringWithoutDotStartPrefixSuffix = patternString;
-            if (patternStringWithoutDotStartPrefixSuffix.startsWith(DOT_STAR)) {
-                patternStringWithoutDotStartPrefixSuffix = patternStringWithoutDotStartPrefixSuffix.substring(DOT_STAR.length());
-            }
-
-            if (patternStringWithoutDotStartPrefixSuffix.endsWith(DOT_STAR)) {
-                patternStringWithoutDotStartPrefixSuffix = patternStringWithoutDotStartPrefixSuffix.substring(0, patternStringWithoutDotStartPrefixSuffix.length() - DOT_STAR.length());
-            }
+            Matcher dotStarPrefixSuffixMatcher = DOT_STAR_PREFIX_SUFFIX_PATTERN.matcher(patternString);
+            checkState(dotStarPrefixSuffixMatcher.matches());
+            String patternStringWithoutDotStartPrefixSuffix = dotStarPrefixSuffixMatcher.group(CORE_PATTERN_INDEX);
 
             if (!patternStringWithoutDotStartPrefixSuffix.equals(patternString)) {
                 re2jPatternWithoutDotStartPrefixSuffix = Pattern.compile(patternStringWithoutDotStartPrefixSuffix, options);
