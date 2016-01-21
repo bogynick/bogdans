@@ -83,9 +83,9 @@ public class HdfsAuthenticatingConnectorModule
         switch (authenticationType) {
             case KERBEROS:
                 return new HadoopKerberosAuthentication(principal, keytab, configuration);
-            case KERBEROS_IMPERSONIFICATION:
+            case KERBEROS_IMPERSONATION:
                 return new HadoopKerberosImpersonatingAuthentication(principal, keytab, configuration);
-            case SIMPLE_IMPERSONIFICATION:
+            case SIMPLE_IMPERSONATION:
                 return new HadoopSimpleImpersonatingAuthentication();
             default:
                 throw new IllegalArgumentException("Authentication type is not supported: " + authenticationType);

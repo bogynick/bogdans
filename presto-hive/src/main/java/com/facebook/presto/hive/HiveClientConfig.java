@@ -924,9 +924,9 @@ public class HiveClientConfig
     public enum AuthenticationType
     {
         SIMPLE,
-        SIMPLE_IMPERSONIFICATION,
+        SIMPLE_IMPERSONATION,
         KERBEROS,
-        KERBEROS_IMPERSONIFICATION
+        KERBEROS_IMPERSONATION
     }
 
     public AuthenticationType getHdfsAuthenticationType()
