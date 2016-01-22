@@ -36,6 +36,7 @@ import com.facebook.presto.sql.planner.LogicalPlanner;
 import com.facebook.presto.sql.planner.Plan;
 import com.facebook.presto.sql.planner.PlanFragmenter;
 import com.facebook.presto.sql.planner.PlanNodeIdAllocator;
+import com.facebook.presto.sql.planner.PlanVerifier;
 import com.facebook.presto.sql.planner.StageExecutionPlan;
 import com.facebook.presto.sql.planner.SubPlan;
 import com.facebook.presto.sql.planner.optimizations.PlanOptimizer;
@@ -79,6 +80,7 @@ public final class SqlQueryExecution
     private final SplitManager splitManager;
     private final NodeScheduler nodeScheduler;
     private final List<PlanOptimizer> planOptimizers;
+    private final List<PlanVerifier> planVerifiers;
     private final RemoteTaskFactory remoteTaskFactory;
     private final LocationFactory locationFactory;
     private final int scheduleSplitBatchSize;
@@ -103,6 +105,7 @@ public final class SqlQueryExecution
             SplitManager splitManager,
             NodeScheduler nodeScheduler,
             List<PlanOptimizer> planOptimizers,
+            List<PlanVerifier> planVerifiers,
             RemoteTaskFactory remoteTaskFactory,
             LocationFactory locationFactory,
             int scheduleSplitBatchSize,
@@ -120,6 +123,7 @@ public final class SqlQueryExecution
             this.splitManager = requireNonNull(splitManager, "splitManager is null");
             this.nodeScheduler = requireNonNull(nodeScheduler, "nodeScheduler is null");
             this.planOptimizers = requireNonNull(planOptimizers, "planOptimizers is null");
+            this.planVerifiers = requireNonNull(planVerifiers, "planVerifiers is null");
             this.locationFactory = requireNonNull(locationFactory, "locationFactory is null");
             this.queryExecutor = requireNonNull(queryExecutor, "queryExecutor is null");
             this.experimentalSyntaxEnabled = experimentalSyntaxEnabled;
@@ -257,7 +261,7 @@ public final class SqlQueryExecution
 
         // plan query
         PlanNodeIdAllocator idAllocator = new PlanNodeIdAllocator();
-        LogicalPlanner logicalPlanner = new LogicalPlanner(stateMachine.getSession(), planOptimizers, idAllocator, metadata);
+        LogicalPlanner logicalPlanner = new LogicalPlanner(stateMachine.getSession(), planOptimizers, planVerifiers, idAllocator, metadata);
         Plan plan = logicalPlanner.plan(analysis);
 
         // extract inputs
@@ -443,6 +447,7 @@ public final class SqlQueryExecution
         private final SplitManager splitManager;
         private final NodeScheduler nodeScheduler;
         private final List<PlanOptimizer> planOptimizers;
+        private final List<PlanVerifier> planVerifiers;
         private final RemoteTaskFactory remoteTaskFactory;
         private final TransactionManager transactionManager;
         private final QueryExplainer queryExplainer;
@@ -461,6 +466,7 @@ public final class SqlQueryExecution
                 SplitManager splitManager,
                 NodeScheduler nodeScheduler,
                 List<PlanOptimizer> planOptimizers,
+                List<PlanVerifier> planVerifiers,
                 RemoteTaskFactory remoteTaskFactory,
                 TransactionManager transactionManager,
                 @ForQueryExecution ExecutorService executor,
@@ -477,6 +483,7 @@ public final class SqlQueryExecution
             this.splitManager = requireNonNull(splitManager, "splitManager is null");
             this.nodeScheduler = requireNonNull(nodeScheduler, "nodeScheduler is null");
             this.planOptimizers = requireNonNull(planOptimizers, "planOptimizers is null");
+            this.planVerifiers = requireNonNull(planVerifiers, "planVerifiers is null");
             this.remoteTaskFactory = requireNonNull(remoteTaskFactory, "remoteTaskFactory is null");
             this.transactionManager = requireNonNull(transactionManager, "transactionManager is null");
             requireNonNull(featuresConfig, "featuresConfig is null");
@@ -508,6 +515,7 @@ public final class SqlQueryExecution
                     splitManager,
                     nodeScheduler,
                     planOptimizers,
+                    planVerifiers,
                     remoteTaskFactory,
                     locationFactory,
                     scheduleSplitBatchSize,

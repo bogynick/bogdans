@@ -57,21 +57,25 @@ public class LogicalPlanner
 
     private final Session session;
     private final List<PlanOptimizer> planOptimizers;
+    private final List<PlanVerifier> planVerifiers;
     private final SymbolAllocator symbolAllocator = new SymbolAllocator();
     private final Metadata metadata;
 
     public LogicalPlanner(Session session,
             List<PlanOptimizer> planOptimizers,
+            List<PlanVerifier> planVerifiers,
             PlanNodeIdAllocator idAllocator,
             Metadata metadata)
     {
         requireNonNull(session, "session is null");
         requireNonNull(planOptimizers, "planOptimizers is null");
+        requireNonNull(planVerifiers, "planVerifiers is null");
         requireNonNull(idAllocator, "idAllocator is null");
         requireNonNull(metadata, "metadata is null");
 
         this.session = session;
         this.planOptimizers = planOptimizers;
+        this.planVerifiers = planVerifiers;
         this.idAllocator = idAllocator;
         this.metadata = metadata;
     }
@@ -104,6 +108,10 @@ public class LogicalPlanner
 
         // make sure we produce a valid plan after optimizations run. This is mainly to catch programming errors
         PlanSanityChecker.validate(root);
+
+        for (PlanVerifier planVerifier : planVerifiers) {
+            planVerifier.verify(root);
+        }
 
         return new Plan(root, symbolAllocator);
     }

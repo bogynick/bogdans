@@ -97,6 +97,7 @@ import com.facebook.presto.sql.planner.PlanFragmenter;
 import com.facebook.presto.sql.planner.PlanNodeIdAllocator;
 import com.facebook.presto.sql.planner.PlanOptimizersFactory;
 import com.facebook.presto.sql.planner.PlanPrinter;
+import com.facebook.presto.sql.planner.PlanVerifiersFactory;
 import com.facebook.presto.sql.planner.SubPlan;
 import com.facebook.presto.sql.planner.plan.PlanNode;
 import com.facebook.presto.sql.planner.plan.PlanNodeId;
@@ -511,9 +512,11 @@ public class LocalQueryRunner
                 .setDistributedIndexJoinsEnabled(false)
                 .setOptimizeHashGeneration(true);
         PlanOptimizersFactory planOptimizersFactory = new PlanOptimizersFactory(metadata, sqlParser, featuresConfig, true);
+        PlanVerifiersFactory planVerifiersFactory = new PlanVerifiersFactory();
 
         QueryExplainer queryExplainer = new QueryExplainer(
                 planOptimizersFactory.get(),
+                planVerifiersFactory.get(),
                 metadata,
                 accessControl,
                 sqlParser,
@@ -522,7 +525,7 @@ public class LocalQueryRunner
         Analyzer analyzer = new Analyzer(session, metadata, sqlParser, accessControl, Optional.of(queryExplainer), featuresConfig.isExperimentalSyntaxEnabled());
 
         Analysis analysis = analyzer.analyze(statement);
-        Plan plan = new LogicalPlanner(session, planOptimizersFactory.get(), idAllocator, metadata).plan(analysis);
+        Plan plan = new LogicalPlanner(session, planOptimizersFactory.get(), planVerifiersFactory.get(), idAllocator, metadata).plan(analysis);
 
         if (printPlan) {
             System.out.println(PlanPrinter.textLogicalPlan(plan.getRoot(), plan.getTypes(), metadata, session));

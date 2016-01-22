@@ -23,6 +23,7 @@ import com.facebook.presto.sql.planner.Plan;
 import com.facebook.presto.sql.planner.PlanFragmenter;
 import com.facebook.presto.sql.planner.PlanNodeIdAllocator;
 import com.facebook.presto.sql.planner.PlanPrinter;
+import com.facebook.presto.sql.planner.PlanVerifier;
 import com.facebook.presto.sql.planner.SubPlan;
 import com.facebook.presto.sql.planner.optimizations.PlanOptimizer;
 import com.facebook.presto.sql.tree.ExplainType.Type;
@@ -40,6 +41,7 @@ import static java.util.Objects.requireNonNull;
 public class QueryExplainer
 {
     private final List<PlanOptimizer> planOptimizers;
+    private final List<PlanVerifier> planVerfiers;
     private final Metadata metadata;
     private final AccessControl accessControl;
     private final SqlParser sqlParser;
@@ -49,6 +51,7 @@ public class QueryExplainer
     @Inject
     public QueryExplainer(
             List<PlanOptimizer> planOptimizers,
+            List<PlanVerifier> planVerifiers,
             Metadata metadata,
             AccessControl accessControl,
             SqlParser sqlParser,
@@ -56,6 +59,7 @@ public class QueryExplainer
             FeaturesConfig featuresConfig)
     {
         this(planOptimizers,
+                planVerifiers,
                 metadata,
                 accessControl,
                 sqlParser,
@@ -65,6 +69,7 @@ public class QueryExplainer
 
     public QueryExplainer(
             List<PlanOptimizer> planOptimizers,
+            List<PlanVerifier> planVerfiers,
             Metadata metadata,
             AccessControl accessControl,
             SqlParser sqlParser,
@@ -72,6 +77,7 @@ public class QueryExplainer
             boolean experimentalSyntaxEnabled)
     {
         this.planOptimizers = requireNonNull(planOptimizers, "planOptimizers is null");
+        this.planVerfiers = requireNonNull(planVerfiers, "planVerfiers is null");
         this.metadata = requireNonNull(metadata, "metadata is null");
         this.accessControl = requireNonNull(accessControl, "accessControl is null");
         this.sqlParser = requireNonNull(sqlParser, "sqlParser is null");
@@ -130,7 +136,7 @@ public class QueryExplainer
         PlanNodeIdAllocator idAllocator = new PlanNodeIdAllocator();
 
         // plan statement
-        LogicalPlanner logicalPlanner = new LogicalPlanner(session, planOptimizers, idAllocator, metadata);
+        LogicalPlanner logicalPlanner = new LogicalPlanner(session, planOptimizers, planVerfiers, idAllocator, metadata);
         return logicalPlanner.plan(analysis);
     }
 
@@ -143,7 +149,7 @@ public class QueryExplainer
         PlanNodeIdAllocator idAllocator = new PlanNodeIdAllocator();
 
         // plan statement
-        LogicalPlanner logicalPlanner = new LogicalPlanner(session, planOptimizers, idAllocator, metadata);
+        LogicalPlanner logicalPlanner = new LogicalPlanner(session, planOptimizers, planVerfiers, idAllocator, metadata);
         Plan plan = logicalPlanner.plan(analysis);
 
         return new PlanFragmenter().createSubPlans(plan);
