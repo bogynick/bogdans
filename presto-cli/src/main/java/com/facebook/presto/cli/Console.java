@@ -51,6 +51,7 @@ import static com.facebook.presto.cli.Completion.lowerCaseCommandCompleter;
 import static com.facebook.presto.cli.Help.getHelpText;
 import static com.facebook.presto.client.ClientSession.stripTransactionId;
 import static com.facebook.presto.client.ClientSession.withCatalogAndSchema;
+import static com.facebook.presto.client.ClientSession.withPreparedStatements;
 import static com.facebook.presto.client.ClientSession.withProperties;
 import static com.facebook.presto.client.ClientSession.withSessionProperties;
 import static com.facebook.presto.client.ClientSession.withTransactionId;
@@ -292,6 +293,14 @@ public class Console
                 sessionProperties.putAll(query.getSetSessionProperties());
                 sessionProperties.keySet().removeAll(query.getResetSessionProperties());
                 session = withProperties(session, sessionProperties);
+            }
+
+            // update prepared statements if present
+            if (!query.getAddedPreparedStatements().isEmpty() || !query.getDeallocatedPreparedStatements().isEmpty()) {
+                Map<String, String> preparedStatements = new HashMap<>(session.getPreparedStatements());
+                preparedStatements.putAll(query.getAddedPreparedStatements());
+                preparedStatements.keySet().removeAll(query.getDeallocatedPreparedStatements());
+                session = withPreparedStatements(session, preparedStatements);
             }
 
             // update transaction ID if necessary
