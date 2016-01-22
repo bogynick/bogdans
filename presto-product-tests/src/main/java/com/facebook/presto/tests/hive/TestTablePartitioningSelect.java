@@ -58,8 +58,7 @@ public class TestTablePartitioningSelect
     {
         String tableName = fileFormat.toLowerCase() + "_single_int_column_partitioned";
         HiveDataSource dataSource = createResourceDataSource(tableName, "" + System.currentTimeMillis(), "com/facebook/presto/tests/hive/data/single_int_column/data." + fileFormat.toLowerCase());
-        return HiveTableDefinition.builder()
-                .setName(tableName)
+        return HiveTableDefinition.builder(tableName)
                 .setCreateTableDDLTemplate(buildSingleIntColumnPartitionedTableDDL(fileFormat, serde))
                 .addPartition("part_col = 1", dataSource)
                 .addPartition("part_col = 2", dataSource)
