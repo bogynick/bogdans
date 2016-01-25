@@ -142,11 +142,9 @@ public final class SqlFormatter
         @Override
         protected Void visitPrepare(Prepare node, Integer indent)
         {
-            append(indent, "PREPARE");
-            builder.append(" ");
+            append(indent, "PREPARE ");
             builder.append(node.getIdentifier());
-            builder.append("\n");
-            append(indent, "FROM");
+            builder.append(" FROM");
             builder.append("\n");
             process(node.getQuery(), indent + 1);
             return null;
