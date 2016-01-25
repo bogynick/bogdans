@@ -266,7 +266,7 @@ public class LocalQueryRunner
                 .put(RenameTable.class, new RenameTableTask())
                 .put(ResetSession.class, new ResetSessionTask())
                 .put(SetSession.class, new SetSessionTask())
-                .put(Prepare.class, new PrepareTask())
+                .put(Prepare.class, new PrepareTask(sqlParser))
                 .put(StartTransaction.class, new StartTransactionTask())
                 .put(Commit.class, new CommitTask())
                 .put(Rollback.class, new RollbackTask())
